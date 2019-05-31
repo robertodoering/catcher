@@ -12,6 +12,12 @@ class PageReportMode extends ReportMode {
 
   @override
   void requestAction(Report report, BuildContext context) {
+    _navigate(report, context);
+  }
+
+  Future<void> _navigate(Report report, BuildContext context) async {
+    await Future.delayed(Duration.zero);
+
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => PageWidget(this, report)),
