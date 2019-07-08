@@ -1,3 +1,20 @@
+## 0.1.9
+* Fixed custom parameters in email manual handler and email auto handler
+* Added sentry handler
+
+## 0.1.8
+* Added explicit report mode map feature
+
+## 0.1.7
+* Added error widget feature
+
+## 0.1.6
+* Updated dependencies
+
+## 0.1.5
+* Fixed debugLock error
+* Added flag to switch Catcher logger on/off
+
 ## 0.1.4
 * Added explicit exception report handler map feature
 

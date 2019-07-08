@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/jhomlala/catcher/blob/master/screenshots/logo.png">
+<img src="https://raw.githubusercontent.com/jhomlala/catcher/master/screenshots/logo.png">
 </p>
 
 # Catcher
@@ -21,7 +21,7 @@ your own backend where you're storing application logs, so you can manipulate it
 Add this line to your **pubspec.yaml**:
 ```yaml
 dependencies:
-  catcher: ^0.1.4
+  catcher: ^0.1.8
 ```
 
 Then run this command:
@@ -56,9 +56,12 @@ import 'package:catcher/catcher_plugin.dart';
 * [Http Handler](#http-handler)  
 * [File Handler](#file-handler)  
 * [Toast Handler](#toast-handler)
+* [Sentry Handler](#sentry-handler)
 
 [Test Exception](#test-exception)  
 [Explicit exception report handler map](#explicit-exception-report-handler-map)  
+[Explicit exception report mode map](#explicit-exception-report-mode-map)  
+[Error widget](#error-widget)  
 
 ## Basic example
 
@@ -125,7 +128,7 @@ show dialog with information for user. This dialog is shown because we have used
 report will be send to console handler which will log to console error informations.
 
 <p align="center">
-<img src="https://github.com/jhomlala/catcher/blob/master/screenshots/6.png" width="250px"> <br/> 
+<img src="https://raw.githubusercontent.com/jhomlala/catcher/master/screenshots/6.png" width="250px"> <br/> 
   <i>Dialog with default confirmation message</i>
 </p>
 
@@ -228,6 +231,7 @@ Catcher instance needs 1 required and 3 optional parameters.
 * debugConfig (optional) - config used when Catcher detects that application runs in debug mode
 * releaseConfig (optional) - config used when Catcher detects that application runs in release mode
 * profileConfig (optional) - config used when Catcher detects that application runs in profile mode
+* enableLogger (optional) - enable/disable internal Catcher logs
 
 
 ```dart
@@ -240,7 +244,7 @@ main() {
   CatcherOptions profileOptions = CatcherOptions(
     NotificationReportMode(), [ConsoleHandler(), ToastHandler()],
     handlerTimeout: 10000, customParameters: {"example": "example_parameter"},);
-  Catcher(MyApp(), debugConfig: debugOptions, releaseConfig: releaseOptions, profileConfig: profileOptions);
+  Catcher(MyApp(), debugConfig: debugOptions, releaseConfig: releaseOptions, profileConfig: profileOptions, enableLogger: false);
 }
 ```
 CatcherOptions parameters:
@@ -455,7 +459,7 @@ ReportMode reportMode = NotificationReportMode();
 See localization options to change default texts.
 
 <p align="center">
-<img width="250px" src="https://github.com/jhomlala/catcher/blob/master/screenshots/1.png"><br/>
+<img width="250px" src="https://raw.githubusercontent.com/jhomlala/catcher/master/screenshots/1.png"><br/>
   <i>Notification Report Mode</i>
 </p>
 
@@ -470,7 +474,7 @@ See localization options to change default texts.
 
 
 <p align="center">
-<img width="250px" src="https://github.com/jhomlala/catcher/blob/master/screenshots/6.png"><br/>
+<img width="250px" src="https://raw.githubusercontent.com/jhomlala/catcher/master/screenshots/6.png"><br/>
   <i>Dialog report mode</i>
 </p>
 
@@ -488,7 +492,7 @@ See localization options to change default texts.
 
 
 <p align="center">
-<img width="250px" src="https://github.com/jhomlala/catcher/blob/master/screenshots/7.png"><br/>
+<img width="250px" src="https://raw.githubusercontent.com/jhomlala/catcher/master/screenshots/7.png"><br/>
   <i>Page report mode</i>
 </p>
 
@@ -624,7 +628,7 @@ List of all parameters:
 
 Example email:
 <p align="center">
-<img src="https://github.com/jhomlala/catcher/blob/master/screenshots/3.png">
+<img src="https://raw.githubusercontent.com/jhomlala/catcher/master/screenshots/3.png">
 </p>
 
 #### Http Handler
@@ -646,7 +650,7 @@ You can try using example backend server which handles logs. It's written in Jav
 You can find code of backend server here: https://github.com/jhomlala/catcher/tree/master/backend
 
 <p align="center">
-<img src="https://github.com/jhomlala/catcher/blob/master/screenshots/4.png">
+<img src="https://raw.githubusercontent.com/jhomlala/catcher/master/screenshots/4.png">
 </p>
 
 Note: Remeber to add Internet permission in Android Manifest:
@@ -699,7 +703,7 @@ All parameters list:
 * customMessage (optional) - custom message for toast, if not set then "Error occured: error" will be displayed.
 
 <p align="center">
-<img src="https://github.com/jhomlala/catcher/blob/master/screenshots/5.png" width="250px">
+<img src="https://raw.githubusercontent.com/jhomlala/catcher/master/screenshots/5.png" width="250px">
 </p>
 
 ### Test exception
@@ -708,6 +712,31 @@ Send test exception:
 ```dart
 Catcher.sendTestException();
 ```
+
+#### Sentry Handler
+Sentry handler allows to send handled errors to Sentry.io. Before using sentry handler, you need to create your project in
+Sentry.io page and then copy DSN link. Example:
+
+```dart
+main() {
+
+  CatcherOptions debugOptions = CatcherOptions(
+      DialogReportMode(), [SentryHandler("YOUR_DSN_HERE")]);
+  CatcherOptions releaseOptions = CatcherOptions(NotificationReportMode(), [
+    EmailManualHandler(["recipient@email.com"])
+  ]);
+
+  Catcher(MyApp(), debugConfig: debugOptions, releaseConfig: releaseOptions);
+}
+```
+
+All parameters list:
+* enableDeviceParameters (optional) - please look in console handler description
+* enableApplicationParameters (optional) - please look in console handler description
+* enableCustomParameters (optional) - please look in console handler description
+* printLogs (optional) - enable/disable debug logs
+
+
 
 ### Explicit exception report handler map
 Explicit exception report handler map allows you to setup report handler for specific exception. For example if you want to setup Console Handler for FormatException, you can write:
@@ -724,3 +753,63 @@ CatcherOptions debugOptions = CatcherOptions(
 ```
 
 Now if `FormatException` will be catched, then Console Handler will be used. Warning: if you setup explicit exception map for specific exception, then only this handler will be used for this exception!
+
+### Explicit exception report mode map
+Same as explicit report handler map, but it's for report mode. Let's say you want to use specific report mode for some exception:
+```dart
+ var explicitReportModesMap = {"FormatException": NotificationReportMode()};
+  CatcherOptions debugOptions = CatcherOptions(
+      DialogReportMode(),
+      [
+        ConsoleHandler(),
+        HttpHandler(HttpRequestType.post, Uri.parse("https://httpstat.us/200"),
+            printLogs: true)
+      ],
+      explicitExceptionReportModesMap: explicitReportModesMap,);
+```
+When `FormatException` will be catched, then NotificationReportMode will be used. For other exceptions, Catcher will use DialogReportMode.
+
+
+
+### Error widget
+You can add error widget which will replace red screen of death. To add this into your app, see code below:
+```dart
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      navigatorKey: Catcher.navigatorKey,
+      //********************************************
+      builder: (BuildContext context, Widget widget) {
+        Catcher.addDefaultErrorWidget(
+            showStacktrace: true,
+            customTitle: "Custom error title",
+            customDescription: "Custom error description");
+        return widget;
+      },
+      //********************************************
+      home: Scaffold(
+          appBar: AppBar(
+            title: const Text('Plugin example app'),
+          ),
+          body: ChildWidget()),
+    );
+  }
+```
+You need to add in your MaterialApp or CupertinoApp builder method with ```Catcher.addDefaultErrorWidget()```. This will add error handler for each widget in your app.
+
+You can provide optional parameters:
+* showStacktrace - show/hide stacktrace
+* customTitle - custom title for error widget
+* customDescription - custom description for error widget
+
+<p align="center">
+<table>
+	<tr>
+		<td>With error widget</td><td>Without error widget</td>
+	</tr>
+		<tr>
+		<td><img src="https://raw.githubusercontent.com/jhomlala/catcher/master/screenshots/8.png" width="250px"></td><td><img src="https://raw.githubusercontent.com/jhomlala/catcher/master/screenshots/9.png" width="250px"></td>
+	</tr>
+ </table>
+</p>
+

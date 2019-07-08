@@ -2,22 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:catcher/catcher_plugin.dart';
 
 main() {
-  CatcherOptions debugOptions = CatcherOptions( DialogReportMode(), [
-    EmailManualHandler(
-      ["email1@email.com", "email2@email.com"],
-      enableDeviceParameters: true,
-      enableStackTrace: true,
-      enableCustomParameters: true,
-      enableApplicationParameters: true,
-      sendHtml: true,
-      emailTitle: "Sample Title",
-      emailHeader: "Sample Header",
-      printLogs: true)
+  CatcherOptions debugOptions = CatcherOptions(
+      DialogReportMode(), [SentryHandler("YOUR_DSN_HERE")]);
+  CatcherOptions releaseOptions = CatcherOptions(NotificationReportMode(), [
+    EmailManualHandler(["recipient@email.com"])
+  ]);
 
-  ], customParameters: {"Test": "Test12345","Test2": "Test54321"});
-
-  Catcher(MyApp(),
-      debugConfig: debugOptions,);
+  Catcher(MyApp(), debugConfig: debugOptions, releaseConfig: releaseOptions);
 }
 
 class MyApp extends StatefulWidget {
@@ -53,6 +44,6 @@ class ChildWidget extends StatelessWidget {
   }
 
   generateError() async {
-    throw "Test exception";
+    Catcher.sendTestException();
   }
 }

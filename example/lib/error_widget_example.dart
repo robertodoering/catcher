@@ -2,19 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:catcher/catcher_plugin.dart';
 
 main() {
-  CatcherOptions debugOptions = CatcherOptions(DialogReportMode(), [
-    EmailManualHandler(
-        ["jhomlala@gmail.com"],
-        enableDeviceParameters: true,
-        enableStackTrace: true,
-        enableCustomParameters: true,
-        enableApplicationParameters: true,
-        sendHtml: true,
-        emailTitle: "Sample Title",
-        emailHeader: "Sample Header",
+  CatcherOptions debugOptions = CatcherOptions(SilentReportMode(), [
+    ConsoleHandler(),
+    HttpHandler(HttpRequestType.post, Uri.parse("https://httpstat.us/200"),
         printLogs: true)
-    /*HttpHandler(HttpRequestType.post, Uri.parse("https://httpstat.us/200"),
-        printLogs: true)*/
   ]);
   CatcherOptions releaseOptions = CatcherOptions(NotificationReportMode(), [
     EmailManualHandler(["recipient@email.com"])
@@ -38,6 +29,13 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: Catcher.navigatorKey,
+      builder: (BuildContext context, Widget widget) {
+        Catcher.addDefaultErrorWidget(
+            showStacktrace: true,
+            customTitle: "Custom error title",
+            customDescription: "Custom error description");
+        return widget;
+      },
       home: Scaffold(
           appBar: AppBar(
             title: const Text('Plugin example app'),
@@ -51,8 +49,7 @@ class ChildWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: FlatButton(
-            child: Text("Generate error"), onPressed: () => generateError()));
+        child: FlatButton(child: Text(null), onPressed: () => generateError()));
   }
 
   generateError() async {
